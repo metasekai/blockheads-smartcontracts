@@ -1,17 +1,19 @@
+import config from '../config';
+
 async function main() {
   // We get the contract to deploy
-  const contractParams = [config.accessControlAddress];
-  const BlockHeads = await hre.ethers.getContractFactory('BlockHeads');
-  const blockHeads = await BlockHeads.deploy(...contractParams);
+  const contractParams = [config.accessControlAddress, config.characterNFTAddress];
+  const BlockHeadMinter = await hre.ethers.getContractFactory('BlockHeadMinter');
+  const blockHeadMinter = await BlockHeadMinter.deploy(...contractParams);
 
-  await blockHeads.deployed();
+  await blockHeadMinter.deployed();
 
-  console.log('BlockHeads deployed to:', blockHeads.address);
+  console.log('BlockHeadMinter deployed to:', blockHeadMinter.address);
   console.log('Verifying Contract...');
 
   try {
     await hre.run('verify:verify', {
-      address: blockHeads.address,
+      address: blockHeadMinter.address,
       constructorArguments: contractParams,
     });
   } catch (e) {
