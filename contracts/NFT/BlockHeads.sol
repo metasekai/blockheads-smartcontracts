@@ -17,6 +17,7 @@ contract BlockHeads is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnabl
     BlockHeadAccessControl public accessControl;
 
     string public baseURI = "";
+    uint256 public maxMintLimit = 10;
 
     event NewBlockHeadCreated(address indexed owner, uint256 indexed tokenId);
 
@@ -96,10 +97,23 @@ contract BlockHeads is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnabl
         baseURI = _uri;
     }
 
+    function setMaxMintLimit(uint256 _limit) public onlyAdmin {
+        require(
+            _limit > 0, 
+            "BlockHeads: Max mint limit must be greater than 0"
+        );
+        
+        maxMintLimit = _limit;
+    }
+
     function createBlockHeads(address to, uint256 qty) public returns (bool) {
         require(
             accessControl.hasMinterRole(msg.sender),
             "BlockHeads: Only minter role can mint new BlockHeads"
+        );
+        require(
+            qty <= maxMintLimit, 
+            "BlockHeads: Max mint limit exceeded"
         );
 
         // Mint multiple BlockHeads
