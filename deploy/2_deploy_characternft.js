@@ -1,3 +1,5 @@
+import config from '../config';
+
 async function main() {
   // We get the contract to deploy
   const contractParams = [config.accessControlAddress];
