@@ -1,16 +1,18 @@
 async function main() {
   // We get the contract to deploy
-  const BlockHeadAccessControl = await hre.ethers.getContractFactory('BlockHeadAccessControl');
-  const blockHeadAccessControl = await BlockHeadAccessControl.deploy();
+  const contractParams = ['0xBd96cDd0CC6c535C79A2799FdEd276Da0DFc6bB1'];
+  const BlockHeads = await hre.ethers.getContractFactory('BlockHeads');
+  const blockHeads = await BlockHeads.deploy(...contractParams);
 
-  await blockHeadAccessControl.deployed();
+  await blockHeads.deployed();
 
-  console.log('BlockHeadAccessControl deployed to:', blockHeadAccessControl.address);
+  console.log('BlockHeads deployed to:', blockHeads.address);
   console.log('Verifying Contract...');
 
   try {
     await hre.run('verify:verify', {
-      address: blockHeadAccessControl.address,
+      address: blockHeads.address,
+      constructorArguments: contractParams,
     });
   } catch (e) {
     console.error('Cant verify contract');

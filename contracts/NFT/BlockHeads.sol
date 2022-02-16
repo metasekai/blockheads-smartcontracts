@@ -44,13 +44,6 @@ contract BlockHeads is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnabl
         return baseURI;
     }
 
-    // function safeMint(address to, string memory uri) public onlyRole(MINTER_ROLE) {
-    //     uint256 tokenId = _tokenIdCounter.current();
-    //     _tokenIdCounter.increment();
-    //     _safeMint(to, tokenId);
-    //     _setTokenURI(tokenId, uri);
-    // }
-
     function _beforeTokenTransfer(address from, address to, uint256 tokenId)
         internal
         whenNotPaused
