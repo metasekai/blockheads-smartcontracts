@@ -4,141 +4,118 @@
  */
 pragma solidity ^0.8.2;
 
-import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
-import "../Access/BlockHeadAccessControl.sol";
-import "../NFT/BlockHeads.sol";
+import '@openzeppelin/contracts/token/ERC721/IERC721.sol';
+import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
+import '@openzeppelin/contracts/security/Pausable.sol';
+import '../Access/BlockHeadAccessControl.sol';
+import '../NFT/BlockHeads.sol';
 
 contract BlockHeadMinter is Pausable {
-    BlockHeadAccessControl public accessControl;
+  BlockHeadAccessControl public accessControl;
 
-    address public USDT = 0x3813e82e6f7098b9583FC0F33a962D02018B6803;
-    BlockHeads public blockHeadCharacter;
+  address public DAI = 0xcB1e72786A6eb3b44C2a2429e317c8a2462CFeb1;
+  BlockHeads public blockHeadCharacter;
 
-    // Price
-    uint256 public characterNFTPrice = 0.02 ether;
-    uint256 public weaponNFTPrice = 0.01 ether;
+  // Price
+  uint256 public characterNFTPrice = 0.02 ether;
+  uint256 public weaponNFTPrice = 0.01 ether;
 
-    // Stats
-    uint256 public totalCharactersMinted = 0;
-    uint256 public totalWeaponsMinted = 0;
+  // Stats
+  uint256 public totalCharactersMinted = 0;
+  uint256 public totalWeaponsMinted = 0;
 
-    event NewCharacterMinted(address indexed owner);
-    event NewWeaponMinted(address indexed owner);
-    event CharacterPriceChanged(uint256 newPrice);
-    event WeaponPriceChanged(uint256 newPrice);
-    event CollectedSales(address indexed collector, uint256 amount);
+  event NewCharacterMinted(address indexed owner);
+  event NewWeaponMinted(address indexed owner);
+  event CharacterPriceChanged(uint256 newPrice);
+  event WeaponPriceChanged(uint256 newPrice);
+  event CollectedSales(address indexed collector, uint256 amount);
 
-    /**
-     * @dev Allow only admin role to operate on certain functions
-     */
-    modifier onlyAdmin() {
-        require(
-            accessControl.hasAdminRole(msg.sender), 
-            "BlockHead: Only admin can perform this action"
-        );
-        _;
-    }
-    
-    constructor(
-        address _accessControl,
-        address _BlockHeadCharacter
-    ) {
-        accessControl = BlockHeadAccessControl(_accessControl);
-        blockHeadCharacter = BlockHeads(_BlockHeadCharacter);
-    }
+  /**
+   * @dev Allow only admin role to operate on certain functions
+   */
+  modifier onlyAdmin() {
+    require(accessControl.hasAdminRole(msg.sender), 'BlockHead: Only admin can perform this action');
+    _;
+  }
 
-    function getTotalCharactersMinted() public view returns (uint256) {
-        return totalCharactersMinted;
-    }
+  constructor(address _accessControl, address _BlockHeadCharacter) {
+    accessControl = BlockHeadAccessControl(_accessControl);
+    blockHeadCharacter = BlockHeads(_BlockHeadCharacter);
+  }
 
-    function getTotalWeaponsMinted() public view returns (uint256) {
-        return totalWeaponsMinted;
-    }
+  function getTotalCharactersMinted() public view returns (uint256) {
+    return totalCharactersMinted;
+  }
 
-    /**
-     * @dev Mint a new character
-     */
-    function buyNewCharacter(uint256 qty) public returns (bool) {
-        require(
-            qty > 0, 
-            "BlockHeads: Quantity must be greater than 0"
-        );
+  function getTotalWeaponsMinted() public view returns (uint256) {
+    return totalWeaponsMinted;
+  }
 
-        uint256 usdtBalance = IERC20(USDT).balanceOf(msg.sender);
-        uint256 totalPrice = qty * characterNFTPrice;
+  /**
+   * @dev Mint a new character
+   */
+  function buyNewCharacter(uint256 qty) public returns (bool) {
+    require(qty > 0, 'BlockHeads: Quantity must be greater than 0');
 
-        require(
-            usdtBalance >= totalPrice,
-            "BlockHeads: Not enough USDT balance"
-        );
+    uint256 daiBalance = IERC20(DAI).balanceOf(msg.sender);
+    uint256 totalPrice = characterNFTPrice * qty;
 
-        // Transfer USDT to contract
-        IERC20(USDT).transferFrom(msg.sender, address(this), totalPrice);
+    require(daiBalance >= totalPrice, 'BlockHeads: Not enough DAI balance');
 
-        // Mint NFT
-        blockHeadCharacter.createBlockHeads(msg.sender, qty);
-        totalCharactersMinted += qty;
+    // Transfer DAI to contract
+    IERC20(DAI).transferFrom(msg.sender, address(this), totalPrice);
 
-        emit NewCharacterMinted(msg.sender);
+    // Mint NFT
+    blockHeadCharacter.createBlockHeads(msg.sender, qty);
+    totalCharactersMinted += qty;
 
-        return true;
-    }
+    emit NewCharacterMinted(msg.sender);
 
-    function buyNewWeapon(address to, uint256 qty) public returns (bool) {
-        
-    }
-    
-    function pause() public {
-        require(
-            accessControl.hasPauserRole(msg.sender), 
-            "BlockHeads: Only pauser role can pause the contract"
-        );
-        _pause();
-    }
+    return true;
+  }
 
-    function unpause() public {
-        require(
-            accessControl.hasPauserRole(msg.sender), 
-            "BlockHeads: Only pauser role can unpause the contract"
-        );
-        _unpause();
-    }
+  function buyNewWeapon(address to, uint256 qty) public returns (bool) {}
 
-    /**
-     * @dev Set the price of a character
-     */
-    function setCharacterPrice(uint256 _price) public onlyAdmin {
-        characterNFTPrice = _price;
+  function pause() public {
+    require(accessControl.hasPauserRole(msg.sender), 'BlockHeads: Only pauser role can pause the contract');
+    _pause();
+  }
 
-        emit CharacterPriceChanged(_price);
-    }
+  function unpause() public {
+    require(accessControl.hasPauserRole(msg.sender), 'BlockHeads: Only pauser role can unpause the contract');
+    _unpause();
+  }
 
-    /**
-     * @dev Set the price of a weapon
-     */
-    function setWeaponPrice(uint256 _price) public onlyAdmin {
-        weaponNFTPrice = _price;
+  /**
+   * @dev Set the price of a character
+   */
+  function setCharacterPrice(uint256 _price) public onlyAdmin {
+    characterNFTPrice = _price;
 
-        emit WeaponPriceChanged(_price);
-    }
+    emit CharacterPriceChanged(_price);
+  }
 
-    /**
-     * @dev Collect minting sales
-     */
-    function collectSales() public onlyAdmin {
-        uint256 usdtBalance = IERC20(USDT).balanceOf(address(this));
-        require(
-            usdtBalance > 0,
-            "BlockHeads: No USDT balance to collect"
-        );
+  /**
+   * @dev Set the price of a weapon
+   */
+  function setWeaponPrice(uint256 _price) public onlyAdmin {
+    weaponNFTPrice = _price;
 
-        // Approve USDT
-        IERC20(USDT).approve(address(this), usdtBalance);
-        // Transfer USDT to contract
-        IERC20(USDT).transferFrom(address(this), msg.sender, usdtBalance);
+    emit WeaponPriceChanged(_price);
+  }
 
-        emit CollectedSales(msg.sender, usdtBalance);
-    }
+  /**
+   * @dev Collect minting sales
+   */
+  function collectSales() public onlyAdmin {
+    uint256 daiBalance = IERC20(DAI).balanceOf(address(this));
+    require(daiBalance > 0, 'BlockHeads: No DAI balance to collect');
+
+    // Approve DAI
+    IERC20(DAI).approve(address(this), daiBalance);
+    // Transfer DAI to contract
+    IERC20(DAI).transferFrom(address(this), msg.sender, daiBalance);
+
+    emit CollectedSales(msg.sender, daiBalance);
+  }
 }

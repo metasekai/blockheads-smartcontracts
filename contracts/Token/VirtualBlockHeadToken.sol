@@ -13,17 +13,17 @@ contract VirtualBlockHeadToken is ERC20, Pausable {
     _mint(msg.sender, 1_000_000_000 * (10**decimals()));
   }
 
+  modifier onlyPauser() {
+    require(accessControl.hasPauserRole(msg.sender), 'BlockHead: Only pauser can perform this action');
+    _;
+  }
+
   function _beforeTokenTransfer(
     address from,
     address to,
     uint256 amount
   ) internal override whenNotPaused {
     super._beforeTokenTransfer(from, to, amount);
-  }
-
-  modifier onlyPauser() {
-    require(accessControl.hasPauserRole(msg.sender), 'BlockHead: Only pauser can perform this action');
-    _;
   }
 
   function pause() public onlyPauser {

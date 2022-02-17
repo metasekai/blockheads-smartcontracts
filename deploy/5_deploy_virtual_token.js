@@ -1,4 +1,4 @@
-import config from '../config';
+const config = require('../config');
 
 async function main() {
     //convert from wei
