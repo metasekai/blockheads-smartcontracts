@@ -17,8 +17,8 @@ contract BlockHeadMinter is Pausable {
     BlockHeads public blockHeadCharacter;
 
     // Price
-    uint256 public characterNFTPrice = 0.02 ether;
-    uint256 public weaponNFTPrice = 0.01 ether;
+    uint256 public characterNFTPrice = 0.02 * 10 ** 6;
+    uint256 public weaponNFTPrice = 0.01 * 10 ** 6;
 
     // Stats
     uint256 public totalCharactersMinted = 0;
@@ -67,7 +67,7 @@ contract BlockHeadMinter is Pausable {
         );
 
         uint256 usdtBalance = IERC20(USDT).balanceOf(msg.sender);
-        uint256 totalPrice = qty * characterNFTPrice;
+        uint256 totalPrice = characterNFTPrice * qty;
 
         require(
             usdtBalance >= totalPrice,
