@@ -13,6 +13,15 @@ async function main() {
     await virtualBlockHeadToken.deployed();
   
     console.log("Virtual BlockHead Token deployed to:", virtualBlockHeadToken.address);
+
+    try {
+        await hre.run('verify:verify', {
+          address: virtualBlockHeadToken.address,
+          constructorArguments: contractParams,
+        });
+    } catch (e) {
+        console.error('Cant verify contract');
+    }
   }
   
   // We recommend this pattern to be able to use async/await everywhere

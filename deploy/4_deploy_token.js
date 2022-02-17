@@ -15,8 +15,16 @@ async function main() {
     await blockHeadToken.deployed();
   
     console.log("BlockHead Token deployed to:", blockHeadToken.address);
-
     console.log("Total Supply", blockHeadToken._getMaxHolding());
+
+    try {
+        await hre.run('verify:verify', {
+          address: blockHeadToken.address,
+          constructorArguments: contractParams,
+        });
+    } catch (e) {
+        console.error('Cant verify contract');
+    }
   }
   
   // We recommend this pattern to be able to use async/await everywhere
