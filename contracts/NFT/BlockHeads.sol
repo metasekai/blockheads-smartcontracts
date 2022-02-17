@@ -19,7 +19,7 @@ contract BlockHeads is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnabl
 
   BlockHeadAccessControl public accessControl;
 
-string public baseURI = '';
+  string public baseURI = '';
   uint256 public maxMintLimit = 10;
 
   event NewBlockHeadCreated(address indexed owner, uint256 indexed tokenId);
