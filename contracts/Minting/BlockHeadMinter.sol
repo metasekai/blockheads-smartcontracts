@@ -13,12 +13,12 @@ import "../NFT/BlockHeads.sol";
 contract BlockHeadMinter is Pausable {
     BlockHeadAccessControl public accessControl;
 
-    address public USDT = 0x3813e82e6f7098b9583FC0F33a962D02018B6803;
+    address public DAI = 0xcB1e72786A6eb3b44C2a2429e317c8a2462CFeb1;
     BlockHeads public blockHeadCharacter;
 
     // Price
-    uint256 public characterNFTPrice = 0.02 * 10 ** 6;
-    uint256 public weaponNFTPrice = 0.01 * 10 ** 6;
+    uint256 public characterNFTPrice = 0.02 ether;
+    uint256 public weaponNFTPrice = 0.01 ether;
 
     // Stats
     uint256 public totalCharactersMinted = 0;
@@ -66,16 +66,16 @@ contract BlockHeadMinter is Pausable {
             "BlockHeads: Quantity must be greater than 0"
         );
 
-        uint256 usdtBalance = IERC20(USDT).balanceOf(msg.sender);
+        uint256 daiBalance = IERC20(DAI).balanceOf(msg.sender);
         uint256 totalPrice = characterNFTPrice * qty;
 
         require(
-            usdtBalance >= totalPrice,
-            "BlockHeads: Not enough USDT balance"
+            daiBalance >= totalPrice,
+            "BlockHeads: Not enough DAI balance"
         );
 
-        // Transfer USDT to contract
-        IERC20(USDT).transferFrom(msg.sender, address(this), totalPrice);
+        // Transfer DAI to contract
+        IERC20(DAI).transferFrom(msg.sender, address(this), totalPrice);
 
         // Mint NFT
         blockHeadCharacter.createBlockHeads(msg.sender, qty);
@@ -128,17 +128,17 @@ contract BlockHeadMinter is Pausable {
      * @dev Collect minting sales
      */
     function collectSales() public onlyAdmin {
-        uint256 usdtBalance = IERC20(USDT).balanceOf(address(this));
+        uint256 daiBalance = IERC20(DAI).balanceOf(address(this));
         require(
-            usdtBalance > 0,
-            "BlockHeads: No USDT balance to collect"
+            daiBalance > 0,
+            "BlockHeads: No DAI balance to collect"
         );
 
-        // Approve USDT
-        IERC20(USDT).approve(address(this), usdtBalance);
-        // Transfer USDT to contract
-        IERC20(USDT).transferFrom(address(this), msg.sender, usdtBalance);
+        // Approve DAI
+        IERC20(DAI).approve(address(this), daiBalance);
+        // Transfer DAI to contract
+        IERC20(DAI).transferFrom(address(this), msg.sender, daiBalance);
 
-        emit CollectedSales(msg.sender, usdtBalance);
+        emit CollectedSales(msg.sender, daiBalance);
     }
 }
